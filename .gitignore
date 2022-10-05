@@ -1,3 +1,4 @@
+s3-download
 HELP.md
 target/
 !.mvn/wrapper/maven-wrapper.jar
