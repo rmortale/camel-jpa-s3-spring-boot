@@ -27,7 +27,7 @@ public class JpaRoutes extends RouteBuilder {
 
         from("direct:s3download")
                 .setHeader(AWS2S3Constants.KEY, constant("docker-compose.yml"))
-                .to("aws2-s3:event-example-bucket?operation=getObject&useDefaultCredentialsProvider=true")
+                .to("aws2-s3:event-example-bucket?operation=getObject")
                 .to("log:s3-log")
                 .to("file:s3-download");
     }
