@@ -23,12 +23,23 @@ public class JpaRoutes extends RouteBuilder {
 //                .log("Inserted new order ${body.id}");
 
         from("timer:new-order?delay=1000&period={{example.generateOrderPeriod:20000}}")
-                .to("direct:s3download");
+                .to("direct:azureUpload");
 
         from("direct:s3download")
                 .setHeader(AWS2S3Constants.KEY, constant("docker-compose.yml"))
                 .to("aws2-s3:event-example-bucket?operation=getObject")
                 .to("log:s3-log")
                 .to("file:s3-download");
+
+        from("direct:azureUpload")
+                .process(exchange -> {
+                    // set the header you want the producer to evaluate, refer to the previous
+                    // section to learn about the headers that can be set
+                    // e.g:
+                    //exchange.getIn().setHeader(BlobConstants.BLOB_NAME, "overridenName");
+                    exchange.getIn().setBody("Block Blob");
+                })
+                .to("azure-storage-blob://azure100tutorials/camelcontainer?blobName=camelblob&operation=uploadBlockBlob")
+                .to("log:azure-log");
     }
 }
